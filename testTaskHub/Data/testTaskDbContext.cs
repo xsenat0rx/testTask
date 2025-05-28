@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 public class TestTaskDbContext : DbContext
 {
-	public DbSet<Billing> Billings { get; set; } = null!;
+	//public DbSet<Billing> Billings { get; set; } = null!;
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
