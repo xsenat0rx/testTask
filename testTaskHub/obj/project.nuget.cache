@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "THS8zuOfF1s=",
+  "dgSpecHash": "bJ+Nh8llRYc=",
   "success": true,
-  "projectFilePath": "D:\\work\\testTask\\testTaskHub\\testTaskHub.csproj",
+  "projectFilePath": "d:\\work\\testTask\\testTaskHub\\testTaskHub.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Oleg\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Oleg\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.16\\microsoft.aspnetcore.authentication.jwtbearer.8.0.16.nupkg.sha512",
