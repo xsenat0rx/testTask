@@ -22,7 +22,7 @@ public class MessageService : IMessageService
 
 		return MapToDto(message);
 	}
-
+	
 	public async Task<MessageDto> UpdateMessageAsync(int messageId, UpdateMessageDto dto, int userId)
 	{
 		var message = await _context.Messages.FindAsync(messageId);
