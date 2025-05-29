@@ -1,20 +1,19 @@
 # Chat Application
 
-A real-time chat application built with ASP.NET Core, SignalR, JWT authentication, and PostgreSQL.  
-Includes REST API, real-time messaging, and is ready for Docker deployment.
+Чат-приложение, работающее в режиме реального времени. Находится в стадии разработки.
 
 ---
 
 ## Features
 
-- User registration and JWT authentication
-- Real-time chat with SignalR (`/chathub`)
-- RESTful API for chats and messages
-- PostgreSQL database (via Entity Framework Core)
-- Swagger API documentation
-- Logging with Serilog (to SQLite)
-- Unit and integration tests
-- Docker Compose support
+- Регистрация пользователей и JWT-аутентификация
+- Real-time чат с использованием SignalR (`/chathub`)
+- RESTful API для чатов и сообщений
+- База данных PostgreSQL (через Entity Framework Core)
+- Документация Swagger API
+- Логирование с использованием Serilog (в БД SQLite)
+- Интеграционные тесты
+- Поддержка Docker Compose
 
 ---
 
@@ -23,13 +22,13 @@ Includes REST API, real-time messaging, and is ready for Docker deployment.
 ### 1. Clone the repository
 
 ```sh
-git clone <your-repo-url>
-cd <your-repo-folder>
+git clone https://github.com/xsenat0rx/testTask.git
+cd testTaskHub
 ```
 
 ### 2. Configuration
 
-Create `appsettings.Development.json` in the `testTaskHub` folder:
+Создайте `appsettings.Development.json` в директории `testTaskHub`:
 
 ```json
 {
@@ -47,12 +46,12 @@ Create `appsettings.Development.json` in the `testTaskHub` folder:
 ### 3. Run with Docker
 
 ```sh
-docker compose up --build
+docker compose up
 ```
 
-The app will be available at [http://localhost:5000](http://localhost:5000).
+Приложение будет доступно по адресу [http://localhost:5000](http://localhost:5000).
 
-### 4. Run migrations (if needed)
+### 4. Run migrations
 
 ```sh
 dotnet ef database update --project testTaskHub
@@ -62,14 +61,14 @@ dotnet ef database update --project testTaskHub
 
 ## API Endpoints
 
-| Method | Endpoint                 | Description              |
-| ------ | ------------------------ | ------------------------ |
-| POST   | /api/auth/register       | Register a new user      |
-| POST   | /api/auth/login          | User login (JWT)         |
-| GET    | /api/chats               | Get user chats           |
-| POST   | /api/chats               | Create a new chat        |
-| GET    | /api/chats/{id}/messages | Get chat message history |
-| POST   | /api/chats/{id}/messages | Send a message           |
+| Method | Endpoint                 | Description                      |
+| ------ | ------------------------ | -------------------------------- |
+| POST   | /api/auth/register       | Регистрация нового пользователя  |
+| POST   | /api/auth/login          | Аутентификация (JWT)             |
+| GET    | /api/chats               | Получение чатов пользователя     |
+| POST   | /api/chats               | Создание нового чата             |
+| GET    | /api/chats/{id}/messages | ПОлучение истории сообщений чата |
+| POST   | /api/chats/{id}/messages | Отправить сообщение              |
 
 ### Real-time
 
@@ -79,19 +78,11 @@ dotnet ef database update --project testTaskHub
 
 ---
 
-## Testing
-
-Run all tests:
-
-```sh
-dotnet test
-```
-
 ---
 
 ## Logging
 
-Logs are stored in `Logs/log.db` (SQLite database) using Serilog.
+Логи хранятся в БД SQLite `Logs/log.db`.
 
 ---
 
@@ -104,23 +95,6 @@ Logs are stored in `Logs/log.db` (SQLite database) using Serilog.
 - PostgreSQL
 - Serilog
 - xUnit
-
----
-
-## Useful Commands
-
-- **Run the app:**  
-  `dotnet run --project testTaskHub`
-- **Apply migrations:**  
-  `dotnet ef database update --project testTaskHub`
-- **Run tests:**  
-  `dotnet test`
-
----
-
-## API Documentation
-
-Swagger UI is available at `/swagger` in development mode.
 
 ---
 
@@ -138,7 +112,7 @@ MIT
 
 ---
 
-## Author
+## Authors
 
-[Your Name]  
-[Your Contact or GitHub]
+xsenat0rx
+skyd4emon
