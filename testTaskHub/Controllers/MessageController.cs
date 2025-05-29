@@ -14,14 +14,6 @@ public class MessagesController : ControllerBase
 		_messageService = messageService;
 	}
 
-	/*[HttpPost]
-	public async Task<IActionResult> CreateMessage([FromBody] CreateMessageDto dto)
-	{
-		var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-		var message = await _messageService.CreateMessageAsync(dto, userId);
-		return Ok(message);
-	}
-
 	[HttpPut("{id}")]
 	public async Task<IActionResult> UpdateMessage(int id, [FromBody] UpdateMessageDto dto)
 	{
@@ -39,7 +31,7 @@ public class MessagesController : ControllerBase
 		{
 			return Unauthorized(ex.Message);
 		}
-	}*/
+	}
 	[HttpDelete("{id}")]
 	public async Task<IActionResult> DeleteMessage(int id)
 	{

@@ -39,7 +39,20 @@ public class DBInitializerAndSeeder(ILogger<DBInitializerAndSeeder> logger,
 		var user1 = new User { Username = "Andrey", Email = "andrey@yandex.ru", PasswordHash = PasswordHelper.HashPassword("AndreyPassword"), CreatedAt = DateTime.UtcNow };
 		var user2 = new User { Username = "Sergey", Email = "sergey@mail.ru", PasswordHash = PasswordHelper.HashPassword("SergeyPassword"), CreatedAt = DateTime.UtcNow };
 		var user3 = new User { Username = "Anna", Email = "anna@gmail.com", PasswordHash = PasswordHelper.HashPassword("AnnaPassword"), CreatedAt = DateTime.UtcNow };
-		_context.Users.AddRange(user1, user2, user3);
+		await _context.Users.AddAsync(user1);
+		await _context.Users.AddAsync(user2);
+		await _context.Users.AddAsync(user3);
+		await _context.SaveChangesAsync();
+
+		var chat1 = new Chat { Name = "House", CreatedAt = DateTime.UtcNow, IsGroup = false };
+		await _context.Chats.AddAsync(chat1);
+		await _context.SaveChangesAsync();
+
+		var message1 = new Message { Text = "Old message text Andrey", SentAt = DateTime.UtcNow, ChatId = 1, SenderId = 1 }; //Andrey
+		var message2 = new Message { Text = "Old message text Sergey", SentAt = DateTime.UtcNow, ChatId = 1, SenderId = 2 }; //Sergey
+		await _context.Messages.AddAsync(message1);
+		await _context.Messages.AddAsync(message2);
+
 		await _context.SaveChangesAsync();
 	}
 }

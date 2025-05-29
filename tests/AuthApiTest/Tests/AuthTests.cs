@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Net;
 
 namespace AuthApiTest;
 
@@ -175,144 +176,53 @@ public class AuthTests : IClassFixture<CustomWebAppFactory<Program>>
             Assert.Fail("Api Register Fail");
         }
     }
-    /*[Fact]
-    public async void RegisterExistingEmailTest()
-    {
-        SeederAsync();
-        var userRegisterRequest = new UserRegisterRequest
-        {
-            Email = "user1@funflex.com",
-            UserName = "SixthUser",
-            Password = "dfrggfgfg!1AAAA"
-        };
-        var jsonContent = JsonSerializer.Serialize(userRegisterRequest);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/User/Register", content);
-        if (response.IsSuccessStatusCode)
-        {
-            response.Should().NotBeNull();
-            var userRegisterResponse = await response.Content.ReadFromJsonAsync<PlatformUsersResponseTest<bool>>();
-            userRegisterResponse.Should().NotBeNull();
-            userRegisterResponse?.IsSucceed.Should().BeFalse();
-            userRegisterResponse?.Data.Should().BeFalse();
-            userRegisterResponse?.Messages.Any(m => m.Key == "DuplicateEmail").Should().BeTrue();
-        }
-        else
-        {
-            Assert.Fail("Api Register Fail");
-        }
-    }
     [Fact]
-    public async void RegisterInvalidUserNameTest()
+    public async void UpdateMessageSuccessTest()
     {
         SeederAsync();
-        var userRegisterRequest = new UserRegisterRequest
+        string token = await GetTokenAsync();
+        UpdateMessageDto updateMessageDto = new UpdateMessageDto
         {
-            Email = "user7@funflex.com",
-            UserName = "юзер7",
-            Password = "dfrggfgfg!1AAAA"
+            Text = "Andrey new message text"
         };
-        var jsonContent = JsonSerializer.Serialize(userRegisterRequest);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/User/Register", content);
+        var response = await GetUpdateMessageApiAsync(token, updateMessageDto);
+        response.Should().NotBeNull();
         if (response.IsSuccessStatusCode)
         {
-            response.Should().NotBeNull();
-            var userRegisterResponse = await response.Content.ReadFromJsonAsync<PlatformUsersResponseTest<bool>>();
-            userRegisterResponse.Should().NotBeNull();
-            userRegisterResponse?.IsSucceed.Should().BeFalse();
-            userRegisterResponse?.Data.Should().BeFalse();
-            userRegisterResponse?.Messages.Any(m => m.Key == "InvalidUserName").Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var userUpdateResponse = await response.Content.ReadFromJsonAsync<MessageDto>();
+            userUpdateResponse.Should().NotBeNull();
+            userUpdateResponse?.Id.Should().Be(1);  //id message
+            userUpdateResponse?.Text.Should().Be("Andrey new message text");
         }
         else
         {
-            Assert.Fail("Api Register Fail");
+            Assert.Fail("Api UdpateUser Failed");
         }
+
     }
-    [Fact]
-    public async void RegisterInvalidEmailTest()
+    private async Task<HttpResponseMessage> GetUpdateMessageApiAsync(string accessToken, UpdateMessageDto updateMessageDto)
     {
-        SeederAsync();
-        var userRegisterRequest = new UserRegisterRequest
-        {
-            Email = "user8",
-            UserName = "EightUser",
-            Password = "dfrggfgfg!1AAAA"
-        };
-        var jsonContent = JsonSerializer.Serialize(userRegisterRequest);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/User/Register", content);
-        if (response.IsSuccessStatusCode)
-        {
-            response.Should().NotBeNull();
-            var userRegisterResponse = await response.Content.ReadFromJsonAsync<PlatformUsersResponseTest<bool>>();
-            userRegisterResponse.Should().NotBeNull();
-            userRegisterResponse?.IsSucceed.Should().BeFalse();
-            userRegisterResponse?.Data.Should().BeFalse();
-            userRegisterResponse?.Messages.Any(m => m.Key == "InvalidEmail").Should().BeTrue();
-        }
-        else
-        {
-            Assert.Fail("Api Register Fail");
-        }
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, "/api/messages/1");
+        httpRequestMessage.Headers.Add("Authorization", "Bearer " + accessToken);
+
+        var jsonContent = JsonSerializer.Serialize(updateMessageDto);
+        httpRequestMessage.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        return await _client.SendAsync(httpRequestMessage);
     }
-    [Fact]
-    public async void RegisterBadPasswordFourConditionTest()
+    private async Task<string> GetTokenAsync()
     {
-        SeederAsync();
-        var userRegisterRequest = new UserRegisterRequest
+        LoginDto loginDto = new LoginDto
         {
-            Email = "user9@funflex.com",
-            UserName = "NinthUser",
-            Password = "fff"
+            Username = "Andrey",
+            Password = "AndreyPassword"
         };
-        var jsonContent = JsonSerializer.Serialize(userRegisterRequest);
+        var jsonContent = JsonSerializer.Serialize(loginDto);
         var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/User/Register", content);
-        if (response.IsSuccessStatusCode)
-        {
-            response.Should().NotBeNull();
-            var userRegisterResponse = await response.Content.ReadFromJsonAsync<PlatformUsersResponseTest<bool>>();
-            userRegisterResponse.Should().NotBeNull();
-            userRegisterResponse?.IsSucceed.Should().BeFalse();
-            userRegisterResponse?.Data.Should().BeFalse();
-            userRegisterResponse?.Messages.Any(m => m.Key == "PasswordTooShort").Should().BeTrue();
-            userRegisterResponse?.Messages.Any(m => m.Key == "PasswordRequiresNonAlphanumeric").Should().BeTrue();
-            userRegisterResponse?.Messages.Any(m => m.Key == "PasswordRequiresDigit").Should().BeTrue();
-            userRegisterResponse?.Messages.Any(m => m.Key == "PasswordRequiresUpper").Should().BeTrue();
-        }
-        else
-        {
-            Assert.Fail("Api Register Fail");
-        }
+        var response = await _client.PostAsync("/api/auth/login", content);
+        var userLoginResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        return userLoginResponse?.Token ?? default!;
     }
-    [Fact]
-    public async void RegisterBadPasswordLastConditionTest()
-    {
-        SeederAsync();
-        var userRegisterRequest = new UserRegisterRequest
-        {
-            Email = "user10@funflex.com",
-            UserName = "TenthUser",
-            Password = "DFRGGFGFG!1AAAA"
-        };
-        var jsonContent = JsonSerializer.Serialize(userRegisterRequest);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/User/Register", content);
-        if (response.IsSuccessStatusCode)
-        {
-            response.Should().NotBeNull();
-            var userRegisterResponse = await response.Content.ReadFromJsonAsync<PlatformUsersResponseTest<bool>>();
-            userRegisterResponse.Should().NotBeNull();
-            userRegisterResponse?.IsSucceed.Should().BeFalse();
-            userRegisterResponse?.Data.Should().BeFalse();
-            userRegisterResponse?.Messages.Any(m => m.Key == "PasswordRequiresLower").Should().BeTrue();
-        }
-        else
-        {
-            Assert.Fail("Api Register Fail");
-        }
-    }*/
     private async void SeederAsync()
     {
         using (var scope = _factory.Services.CreateScope())

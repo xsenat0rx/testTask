@@ -7,60 +7,7 @@ using testTaskHub.Hubs;
 using Serilog;
 using Serilog.Sinks.SQLite;
 
-<<<<<<< HEAD
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddDbContext<TestTaskDbContext>();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSignalR();
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.SQLite(
-        sqliteDbPath: "Logs/log.db",  // SQLite database path
-        tableName: "Logs",
-        storeTimestampInUtc: true)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
-
-// Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-            ValidAudience = builder.Configuration["JWT:ValidAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
-        };
-         options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
-            {
-                context.Token = accessToken;
-            }
-            return Task.CompletedTask;
-        }
-    };
-    });
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-=======
 namespace testTaskHub
->>>>>>> d168b53e1f340dd5220ebefb39ae5ccf8eae4974
 {
     public class Program
     {
@@ -68,23 +15,12 @@ namespace testTaskHub
         {
             var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
-//app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseCors();
-
-app.MapHub<ChatHub>("/chathub");
-app.MapControllers();
-app.Run();
-=======
             builder.Services.AddControllers();
             builder.Services.AddDbContext<TestTaskDbContext>();
             builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
-
+            builder.Services.AddSignalR();
             // Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -99,8 +35,20 @@ app.Run();
                         ValidAudience = builder.Configuration["JWT:ValidAudience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
-
             builder.Services.AddSwaggerGen(config =>
             {
                 config.SwaggerDoc("v1", new OpenApiInfo()
@@ -128,6 +76,15 @@ app.Run();
                     Array.Empty<string>()
                 }});
             });
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.SQLite(
+                    sqliteDbPath: "Logs/log.db",  // SQLite database path
+                    tableName: "Logs",
+                    storeTimestampInUtc: true)
+            .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
 
@@ -136,15 +93,13 @@ app.Run();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapHub<ChatHub>("/chathub");
             app.MapControllers();
             app.Run();
         }
-
     }
 }
->>>>>>> d168b53e1f340dd5220ebefb39ae5ccf8eae4974
