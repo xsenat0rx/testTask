@@ -10594,23 +10594,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\skyda\\.nuget\\packages\\": {},
+    "C:\\Users\\Oleg\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\.repos\\testTask\\tests\\AuthApiTest\\AuthApiTest.csproj",
+      "projectUniqueName": "D:\\work\\testTask\\tests\\AuthApiTest\\AuthApiTest.csproj",
       "projectName": "AuthApiTest",
-      "projectPath": "C:\\.repos\\testTask\\tests\\AuthApiTest\\AuthApiTest.csproj",
-      "packagesPath": "C:\\Users\\skyda\\.nuget\\packages\\",
-      "outputPath": "C:\\.repos\\testTask\\tests\\AuthApiTest\\obj\\",
+      "projectPath": "D:\\work\\testTask\\tests\\AuthApiTest\\AuthApiTest.csproj",
+      "packagesPath": "C:\\Users\\Oleg\\.nuget\\packages\\",
+      "outputPath": "D:\\work\\testTask\\tests\\AuthApiTest\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\skyda\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Oleg\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -10619,7 +10619,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -10641,8 +10640,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.200"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -10709,7 +10707,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
