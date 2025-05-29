@@ -185,7 +185,7 @@ public class AuthTests : IClassFixture<CustomWebAppFactory<Program>>
         {
             Text = "Andrey new message text"
         };
-        var response = await GetUpdateMessageApiAsync(token, updateMessageDto);
+        var response = await GetUpdateMessageApiAsync(token, updateMessageDto, 1);
         response.Should().NotBeNull();
         if (response.IsSuccessStatusCode)
         {
@@ -197,17 +197,125 @@ public class AuthTests : IClassFixture<CustomWebAppFactory<Program>>
         }
         else
         {
-            Assert.Fail("Api UdpateUser Failed");
+            Assert.Fail("Api UpdateMessage Failed");
         }
 
     }
-    private async Task<HttpResponseMessage> GetUpdateMessageApiAsync(string accessToken, UpdateMessageDto updateMessageDto)
+    [Fact]
+    public async void UpdateUnexisingMessageTest()
     {
-        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, "/api/messages/1");
+        SeederAsync();
+        string token = await GetTokenAsync();
+        UpdateMessageDto updateMessageDto = new UpdateMessageDto
+        {
+            Text = "Andrey new message text"
+        };
+        var response = await GetUpdateMessageApiAsync(token, updateMessageDto, 100);
+        response.Should().NotBeNull();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        else
+        {
+            Assert.Fail("Api UpdateMessage Failed");
+        }
+
+    }
+    [Fact]
+    public async void UpdateOtherMessageTest()
+    {
+        SeederAsync();
+        string token = await GetTokenAsync();
+        UpdateMessageDto updateMessageDto = new UpdateMessageDto
+        {
+            Text = "Andrey new message text"
+        };
+        var response = await GetUpdateMessageApiAsync(token, updateMessageDto, 2);
+        response.Should().NotBeNull();
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+        else
+        {
+            Assert.Fail("Api UpdateMessage Failed");
+        }
+
+    }
+    [Fact]
+    public async void DeleteMessageSuccessTest()
+    {
+        SeederAsync();
+        string token = await GetTokenAsync();
+        var response = await GetDeleteMessageApiAsync(token, 1);
+        response.Should().NotBeNull();
+        if (response.IsSuccessStatusCode)
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var userUpdateResponse = await response.Content.ReadFromJsonAsync<DeleteResponse>();
+            userUpdateResponse?.success.Should().BeTrue();
+        }
+        else
+        {
+            Assert.Fail("Api DeleteMessage Failed");
+        }
+
+    }
+    [Fact]
+    public async void DeleteUnexisingMessageTest()
+    {
+        SeederAsync();
+        string token = await GetTokenAsync();
+        var response = await GetDeleteMessageApiAsync(token, 100);
+        response.Should().NotBeNull();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        else
+        {
+            Assert.Fail("Api DeleteMessage Failed");
+        }
+
+    }
+    [Fact]
+    public async void DeleteOtherMessageTest()
+    {
+        SeederAsync();
+        string token = await GetTokenAsync();
+        var response = await GetDeleteMessageApiAsync(token, 2);
+        response.Should().NotBeNull();
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+        else
+        {
+            Assert.Fail("Api DeleteMessage Failed");
+        }
+
+    }
+    private async Task<HttpResponseMessage> GetUpdateMessageApiAsync(string accessToken, UpdateMessageDto updateMessageDto, int id)
+    {
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, $"/api/messages/{id}");
         httpRequestMessage.Headers.Add("Authorization", "Bearer " + accessToken);
 
         var jsonContent = JsonSerializer.Serialize(updateMessageDto);
         httpRequestMessage.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        return await _client.SendAsync(httpRequestMessage);
+    }
+    private async Task<HttpResponseMessage> GetDeleteMessageApiAsync(string accessToken, int id)
+    {
+        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/api/messages/{id}");
+        httpRequestMessage.Headers.Add("Authorization", "Bearer " + accessToken);
+
+        //var jsonContent = JsonSerializer.Serialize(updateMessageDto);
+        //httpRequestMessage.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
         return await _client.SendAsync(httpRequestMessage);
     }
     private async Task<string> GetTokenAsync()
