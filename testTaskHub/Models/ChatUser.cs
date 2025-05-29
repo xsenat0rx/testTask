@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+
+[PrimaryKey(nameof(UserId), nameof(ChatId))]
 public class ChatUser
 {
 	public int UserId { get; set; }
