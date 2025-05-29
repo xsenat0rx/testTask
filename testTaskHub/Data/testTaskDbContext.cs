@@ -3,6 +3,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 public class TestTaskDbContext : DbContext
 {
+	public TestTaskDbContext(DbContextOptions<TestTaskDbContext> options)
+	: base(options)
+	{
+	}
 	public DbSet<User> Users { get; set; } = null!;
 	public DbSet<Message> Messages { get; set; } = null!;
 	public DbSet<Chat> Chats { get; set; } = null!;
@@ -10,10 +14,13 @@ public class TestTaskDbContext : DbContext
 
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		var config = new ConfigurationBuilder()
-			.AddJsonFile("appsettings.json")
-			.SetBasePath(Directory.GetCurrentDirectory())
-			.Build();
-		optionsBuilder.UseNpgsql(config.GetConnectionString("TestTaskConnection"));
+		if (!optionsBuilder.IsConfigured)
+		{
+			var config = new ConfigurationBuilder()
+				.AddJsonFile("appsettings.json")
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.Build();
+			optionsBuilder.UseNpgsql(config.GetConnectionString("TestTaskConnection"));
+		}
 	}
 }
