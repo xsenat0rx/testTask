@@ -96,5 +96,21 @@ namespace testTaskHub.Controllers
             var messages = await _chatService.GetChatMessagesAsync(chatId);
             return Ok(messages);
         }
+        [HttpGet("search")]
+        [Authorize]
+        public async Task<IActionResult> SearchChats([FromQuery] string query)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var chats = await _chatService.SearchChatsAsync(userId, query);
+            return Ok(chats);
+        }
+
+        [HttpGet("{chatId}/messages/search")]
+        [Authorize]
+        public async Task<IActionResult> SearchMessages(int chatId, [FromQuery] string query)
+        {
+            var messages = await _chatService.SearchMessagesAsync(chatId, query);
+            return Ok(messages);
+        }
     }
 }

@@ -66,5 +66,20 @@ namespace testTaskHub.Services
             _logger.LogInformation($"Sent message {message}");
             await _context.SaveChangesAsync();
         }
+        public async Task<List<Chat>> SearchChatsAsync(int userId, string query)
+        {
+            _logger.LogInformation($"Requested search for chat's names {query} from user {userId}");
+            return await _context.Chats
+                .Where(c => c.Users.Any(u => u.UserId == userId) && c.Name.Contains(query))
+                .ToListAsync();
+        }
+
+        public async Task<List<Message>> SearchMessagesAsync(int chatId, string query)
+        {
+            _logger.LogInformation($"Requested search for messages in chat {chatId} with meaning {query}");
+            return await _context.Messages
+                .Where(m => m.ChatId == chatId && m.Text.Contains(query))
+                .ToListAsync();
+        }
     }
 }

@@ -11,5 +11,7 @@ namespace testTaskHub.Interfaces
         public Task<List<Message>> GetChatMessagesAsync(int chatId);
         public Task<List<int>> GetUserChatsAsync(int userId);
         public Task SaveMessageAsync(Message message);
+        Task<List<Chat>> SearchChatsAsync(int userId, string query);
+        Task<List<Message>> SearchMessagesAsync(int chatId, string query);
     }
 }
