@@ -5,7 +5,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using testTaskHub.Hubs;
 using Serilog;
-using Serilog.Sinks.SQLite;
+using testTaskHub.Interfaces;
+using testTaskHub.Services;
 
 namespace testTaskHub
 {
@@ -19,6 +20,7 @@ namespace testTaskHub
             builder.Services.AddDbContext<TestTaskDbContext>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IChatService, ChatService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddSignalR();
             // Authentication

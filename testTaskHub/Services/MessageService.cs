@@ -10,7 +10,7 @@ public class MessageService : IMessageService
 		_context = context;
 		_logger = logger;
 	}
-
+	
 	public async Task<MessageDto> UpdateMessageAsync(int messageId, UpdateMessageDto dto, int userId)
 	{
 		var message = await _context.Messages.FindAsync(messageId);
