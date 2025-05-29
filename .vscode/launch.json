@@ -1,0 +1,41 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch testTaskHub Web",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build",
+			"program": "${workspaceFolder}/testTaskHub/bin/Debug/net8.0/testTaskHub.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/testTaskHub",
+			"stopAtEntry": false,
+			"serverReadyAction": {
+				"action": "openExternally",
+				"pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+			},
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
+			"sourceFileMap": {
+				"/Views": "${workspaceFolder}/testTaskHub/Views"
+			}
+		},
+		{
+			"name": "Debug AuthApiTest (Unit Tests)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build",
+			"program": "${workspaceFolder}/tests/AuthApiTest/bin/Debug/net8.0/AuthApiTest.dll",
+			"args": [],
+			"cwd": "${workspaceFolder}/tests/AuthApiTest",
+			"stopAtEntry": false,
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			}
+		}
+	]
+}
