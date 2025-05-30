@@ -11,9 +11,9 @@ namespace testTaskHub.Services
     public class ChatService : IChatService
     {
         private readonly TestTaskDbContext _context;
-        private readonly ILogger<ChatHub> _logger;
+        private readonly ILogger<ChatService> _logger;
 
-        public ChatService(TestTaskDbContext context, ILogger<ChatHub> logger)
+        public ChatService(TestTaskDbContext context, ILogger<ChatService> logger)
         {
             _context = context;
             _logger = logger;
@@ -46,7 +46,17 @@ namespace testTaskHub.Services
             .ToListAsync();
         }
 
-        public async Task<List<int>> GetUserChatsAsync(int userId)
+        public async Task<IEnumerable<Message>> GetChatMessagesAsync(int chatId, int pageNumber, int pageSize)
+        {
+            return await _context.Messages
+                .Where(m => m.ChatId == chatId)
+                .OrderByDescending(m => m.SentAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<int>> GetUserChatsAsync(int userId)
         {
             var userChats = await _context.Chats
                 .Where(x => x.Users.Any(u => u.UserId == userId))
@@ -78,7 +88,7 @@ namespace testTaskHub.Services
         {
             _logger.LogInformation($"Requested search for messages in chat {chatId} with meaning {query}");
             return await _context.Messages
-                .Where(m => m.ChatId == chatId && m.Text.Contains(query))
+                .Where(m => m.ChatId == chatId && m.Text.ToLower().Contains(query.ToLower()))
                 .ToListAsync();
         }
     }

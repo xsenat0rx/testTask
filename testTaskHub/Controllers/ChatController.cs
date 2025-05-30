@@ -27,16 +27,23 @@ namespace testTaskHub.Controllers
             _hubContext = hubContext;
         }
 
+        // Helper method to extract and validate userId from claims
+        private bool TryGetUserId(out int userId)
+        {
+            userId = 0;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return !string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out userId) && userId > 0;
+        }
+
         [HttpPost("CreateNewChat")]
         [Authorize]
         public async Task<IActionResult> CreateNewChat(string chatName)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             if (string.IsNullOrWhiteSpace(chatName))
             {
                 return BadRequest("Chat name cannot be empty.");
             }
-            if (userId <= 0)
+            if (!TryGetUserId(out var userId))
             {
                 return Unauthorized("User is not authenticated.");
             }
@@ -49,8 +56,7 @@ namespace testTaskHub.Controllers
         [Authorize]
         public async Task<IActionResult> GetUserChats()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            if (userId <= 0)
+            if (!TryGetUserId(out var userId))
             {
                 return Unauthorized("User is not authenticated.");
             }
@@ -66,8 +72,7 @@ namespace testTaskHub.Controllers
             if (chatId <= 0)
                 return BadRequest("Invalid chat ID.");
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            if (userId <= 0)
+            if (!TryGetUserId(out var userId))
                 return Unauthorized("User is not authenticated.");
 
             await _hubContext.Clients.Group($"chat-{chatId}")
@@ -84,23 +89,28 @@ namespace testTaskHub.Controllers
 
         [HttpGet("GetChatMessages/{chatId}")]
         [Authorize]
-        public async Task<IActionResult> GetChatMessages(int chatId)
+        public async Task<IActionResult> GetChatMessages(
+            int chatId,
+            int pageNumber = 1,
+            int pageSize = 20)
         {
             if (chatId <= 0)
                 return BadRequest("Invalid chat ID.");
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            if (userId <= 0)
+            if (!TryGetUserId(out var userId))
                 return Unauthorized("User is not authenticated.");
 
-            var messages = await _chatService.GetChatMessagesAsync(chatId);
+            var messages = await _chatService.GetChatMessagesAsync(chatId, pageNumber, pageSize);
             return Ok(messages);
         }
+
         [HttpGet("search")]
         [Authorize]
         public async Task<IActionResult> SearchChats([FromQuery] string query)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (!TryGetUserId(out var userId))
+                return Unauthorized("User is not authenticated.");
+
             var chats = await _chatService.SearchChatsAsync(userId, query);
             return Ok(chats);
         }
@@ -109,6 +119,8 @@ namespace testTaskHub.Controllers
         [Authorize]
         public async Task<IActionResult> SearchMessages(int chatId, [FromQuery] string query)
         {
+             if (!TryGetUserId(out var userId))
+                return Unauthorized("User is not authenticated.");
             var messages = await _chatService.SearchMessagesAsync(chatId, query);
             return Ok(messages);
         }

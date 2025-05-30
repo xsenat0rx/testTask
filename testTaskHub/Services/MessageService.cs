@@ -3,9 +3,9 @@ using testTaskHub.Hubs;
 public class MessageService : IMessageService
 {
 	private readonly TestTaskDbContext _context;
-	private readonly ILogger<ChatHub> _logger;
+	private readonly ILogger<MessageService> _logger;
 
-	public MessageService(TestTaskDbContext context, ILogger<ChatHub> logger)
+	public MessageService(TestTaskDbContext context, ILogger<MessageService> logger)
 	{
 		_context = context;
 		_logger = logger;
