@@ -12,15 +12,4 @@ public class TestTaskDbContext : DbContext
 	public DbSet<Chat> Chats { get; set; } = null!;
 	public DbSet<ChatUser> ChatUsers { get; set; } = null!;
 
-	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-	{
-		if (!optionsBuilder.IsConfigured)
-		{
-			var config = new ConfigurationBuilder()
-				.AddJsonFile("appsettings.json")
-				.SetBasePath(Directory.GetCurrentDirectory())
-				.Build();
-			optionsBuilder.UseNpgsql(config.GetConnectionString("TestTaskConnection"));
-		}
-	}
 }

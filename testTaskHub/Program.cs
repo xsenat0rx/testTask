@@ -16,8 +16,10 @@ namespace testTaskHub
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration.AddEnvironmentVariables();
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<TestTaskDbContext>();
+            builder.Services.AddDbContext<TestTaskDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("testTaskConnection")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IChatService, ChatService>();
@@ -87,8 +89,7 @@ namespace testTaskHub
             .CreateLogger();
 
             builder.Host.UseSerilog();
-            builder.Configuration.AddEnvironmentVariables();
-
+            builder.Configuration.GetConnectionString("testTaskConnection");
             var app = builder.Build();
 
             //if (app.Environment.IsDevelopment())
@@ -100,7 +101,15 @@ namespace testTaskHub
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.MapGet("/config", (IConfiguration config) =>
+            {
+                return new
+                {
+                    Database = config.GetConnectionString("testTaskConnection"),
+                    JwtIssuer = config["Jwt:Issuer"],
+                    Environment = config["ASPNETCORE_ENVIRONMENT"]
+                };
+            });
             app.MapHub<ChatHub>("/chathub");
             app.MapControllers();
             app.Run();
