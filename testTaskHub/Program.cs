@@ -87,15 +87,17 @@ namespace testTaskHub
             .CreateLogger();
 
             builder.Host.UseSerilog();
+            builder.Configuration.AddEnvironmentVariables();
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            //if (app.Environment.IsDevelopment())
+            //{
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            //}
             //app.UseHttpsRedirection();
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseAuthorization();
 

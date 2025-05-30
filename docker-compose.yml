@@ -1,0 +1,28 @@
+services:
+  web_api:
+    container_name: chat_app
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - "db"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__TestTaskConnection=Host=db;Port=5432;Database=ChatApplication;Username=Administrator;Password=1234567890;IncludeErrorDetail=true
+      - JWT__ValidIssuer=http://localhost:5200
+      - JWT__ValidAudience=http://localhost:5200
+      - JWT__Secret=YourSuperSecretKeyHereAtLeast32CharactersLong
+  db:
+    image: postgres:16.3
+    container_name: PostgresChatApplicationContainer
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: Administrator
+      POSTGRES_PASSWORD: 1234567890
+      POSTGRES_DB: ChatApplication
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
