@@ -1,118 +1,215 @@
 # Chat Application
 
-Чат-приложение, работающее в режиме реального времени. Находится в стадии разработки.
+Чат-приложение с поддержкой real-time обмена сообщениями, JWT-аутентификацией, поиском по чатам и сообщениям, интеграционными тестами и полной поддержкой Docker.
 
 ---
 
-## Features
+## 🚀 Возможности
 
-- Регистрация пользователей и JWT-аутентификация
-- Real-time чат с использованием SignalR (`/chathub`)
+- Регистрация и аутентификация пользователей (JWT)
+- Real-time чат через SignalR (`/chathub`)
 - RESTful API для чатов и сообщений
-- База данных PostgreSQL (через Entity Framework Core)
-- Документация Swagger API
-- Логирование с использованием Serilog (в БД SQLite)
-- Интеграционные тесты
-- Поддержка Docker Compose
+- Поиск по чатам и сообщениям
+- Пагинация сообщений
+- PostgreSQL (Entity Framework Core)
+- Swagger API документация
+- Логирование событий через Serilog (в SQLite)
+- Интеграционные и unit-тесты (xUnit)
+- Docker Compose для быстрого запуска
 
 ---
 
-## Getting Started
+## ⚡ Быстрый старт
 
-### 1. Clone the repository
+### 1. Клонирование репозитория
 
 ```sh
 git clone https://github.com/xsenat0rx/testTask.git
-cd testTaskHub
+cd testTask
 ```
 
-### 2. Configuration
-
-Создайте `appsettings.Development.json` в директории `testTaskHub`:
-
-```json
-{
-  "ConnectionStrings": {
-    "TestTaskConnection": "Host=localhost;Port=5432;Database=test_db;Username=postgres;Password=yourpassword"
-  },
-  "JWT": {
-    "ValidIssuer": "your_issuer",
-    "ValidAudience": "your_audience",
-    "Secret": "your_secret_key"
-  }
-}
-```
-
-### 3. Run with Docker
+### 2. Запуск через Docker Compose
 
 ```sh
-docker compose up
+docker compose up --build
 ```
 
-Приложение будет доступно по адресу [http://localhost:5000](http://localhost:5000).
+Приложение будет доступно по адресу [http://localhost:8080](http://localhost:8080).
 
-### 4. Run migrations
-
-```sh
-dotnet ef database update --project testTaskHub
-```
+> **ℹ️ Окружение сервиса `web_api` (строка подключения к БД, параметры JWT и др.) можно изменить прямо в файле `docker-compose.yml` в секции `environment`.**
 
 ---
 
-## API Endpoints
+## 📝 API Endpoints
 
-| Method | Endpoint                 | Description                      |
-| ------ | ------------------------ | -------------------------------- |
-| POST   | /api/auth/register       | Регистрация нового пользователя  |
-| POST   | /api/auth/login          | Аутентификация (JWT)             |
-| GET    | /api/chats               | Получение чатов пользователя     |
-| POST   | /api/chats               | Создание нового чата             |
-| GET    | /api/chats/{id}/messages | ПОлучение истории сообщений чата |
-| POST   | /api/chats/{id}/messages | Отправить сообщение              |
+| Method | Endpoint                                  | Описание                  |
+| ------ | ----------------------------------------- | ------------------------- |
+| POST   | /api/auth/register                        | Регистрация пользователя  |
+| POST   | /api/auth/login                           | Вход (JWT)                |
+| GET    | /api/chats                                | Список чатов пользователя |
+| POST   | /api/chats                                | Создать новый чат         |
+| GET    | /api/chats/{id}/messages                  | История сообщений в чате  |
+| POST   | /api/chats/{id}/messages                  | Отправить сообщение       |
+| GET    | /api/chats/search?query=...               | Поиск чатов по названию   |
+| GET    | /api/chats/{id}/messages/search?query=... | Поиск сообщений в чате    |
 
-### Real-time
+### SignalR Hub
 
-- **SignalR Hub:** `/chathub`
+- **/chathub**
   - `JoinChat(int chatId)`
   - `SendMessage(int chatId, string text)`
 
 ---
 
+## 🔍 Поиск
+
+- **Чаты:**  
+  `GET /api/chats/search?query=текст`
+- **Сообщения:**  
+  `GET /api/chats/{chatId}/messages/search?query=текст`
+
 ---
 
-## Logging
+## 📚 Документация API (Swagger)
 
-Логи хранятся в БД SQLite `Logs/log.db`.
+Swagger UI доступен после запуска приложения по адресу:  
+[http://localhost:8080/swagger](http://localhost:8080/swagger)
+
+### Примеры запросов
+
+#### Аутентификация
+
+**POST `/api/auth/register`**  
+Регистрация нового пользователя.
+
+```json
+{
+  "username": "Anna",
+  "email": "anna@yandex.ru",
+  "password": "AnnaPassword"
+}
+```
+
+**POST `/api/auth/login`**  
+Аутентификация пользователя, получение JWT.
+
+```json
+{
+  "email": "anna@yandex.ru",
+  "password": "AnnaPassword"
+}
+```
+
+**Пример ответа:**
+
+```json
+{
+  "isSuccess": true,
+  "token": "jwt-token",
+  "message": "Login successful"
+}
+```
 
 ---
 
-## Development
+#### Чаты
+
+**GET `/api/chats`**  
+Получить список чатов пользователя.
+
+**POST `/api/chats`**  
+Создать новый чат.
+
+```json
+{
+  "name": "New Chat"
+}
+```
+
+**GET `/api/chats/{id}/messages`**  
+Получить сообщения в чате.
+
+**POST `/api/chats/{id}/messages`**  
+Отправить сообщение в чат.
+
+```json
+{
+  "text": "Привет!"
+}
+```
+
+---
+
+#### Поиск
+
+**GET `/api/chats/search?query=текст`**  
+Поиск чатов по названию.
+
+**GET `/api/chats/{chatId}/messages/search?query=текст`**  
+Поиск сообщений в чате.
+
+---
+
+#### SignalR Hub
+
+- **/chathub** — real-time обмен сообщениями.
+- Для авторизации в SignalR используйте JWT-токен в query-параметре `access_token`.
+
+---
+
+#### Авторизация
+
+Для доступа к защищённым эндпоинтам используйте JWT-токен в заголовке:
+
+```
+Authorization: Bearer <ваш токен>
+```
+
+В Swagger UI нажмите "Authorize" и вставьте ваш JWT-токен для выполнения защищённых запросов.
+
+---
+
+#### Конфиг
+
+**GET `/config`**  
+Получить текущие параметры окружения и строки подключения (для отладки).
+
+---
+
+## 🛠️ Разработка и тестирование
 
 - .NET 8
 - ASP.NET Core Web API
 - SignalR
-- Entity Framework Core
-- PostgreSQL
-- Serilog
-- xUnit
+- Entity Framework Core + PostgreSQL
+- Serilog (логи в `Logs/log.db`)
+- xUnit (интеграционные и unit-тесты)
+
+### Запуск тестов
+
+```sh
+dotnet test
+```
 
 ---
 
-## Requirements
+## 🐳 Требования
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/)
-- [PostgreSQL](https://www.postgresql.org/) (if not using Docker Compose)
+- [PostgreSQL](https://www.postgresql.org/) (если не использовать Docker Compose)
 
 ---
 
-## License
+## 📄 Лицензия
 
 MIT
 
 ---
 
-## Authors
+## 👥 Авторы
 
-xsenat0rx
-skyd4emon
+- xsenat0rx
+- skyd4emon
+
+---
